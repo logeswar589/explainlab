@@ -1,0 +1,16 @@
+name: Feature idea
+description: Describe a task ExplainLab could help with
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: What are you trying to understand or accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help?
+      description: Give a concrete before-and-after example and explain any alternatives you tried.
+    validations:
+      required: true

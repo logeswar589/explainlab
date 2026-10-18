@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5f1">
+  <meta name="description" content="Turn code, notes, and everyday instructions into explanations, concept maps, and quizzes with your local AI.">
+  <title>ExplainLab — Make it click</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" type="module"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="ExplainLab home"><span class="brand-mark">✳</span> ExplainLab<span class="brand-dot">.</span></a>
+    <div class="nav-caption">WORKSPACE</div>
+    <nav aria-label="Main navigation">
+      <button class="nav-item active" id="nav-explore"><span class="nav-symbol">◈</span> Explain something</button>
+      <button class="nav-item" id="nav-library"><span class="nav-symbol">▤</span> My library <span class="nav-count" id="library-count">0</span></button>
+    </nav>
+    <div class="sidebar-note"><span class="little-spark">✳</span><strong>A little clarity.<br>A lot of possibility.</strong><p>For the things you want to understand, not just remember.</p></div>
+    <div class="sidebar-bottom"><span class="status-dot"></span> Open source. Open minds.<small>ExplainLab · v0.1.0</small></div>
+  </aside>
+  <main>
+    <header class="topbar"><span class="breadcrumb">YOUR LEARNING WORKSPACE</span><button class="connection" id="connection-button"><span class="status-dot muted" id="connection-dot"></span><span id="connection-label">Connect local AI</span><span aria-hidden="true">↗</span></button></header>
+    <section id="explore-view">
+      <div class="intro"><div><div class="eyebrow">LESS FRICTION. MORE UNDERSTANDING.</div><h1>Make it <em>click.</em></h1><p>Big ideas, broken down. Bring something you want to understand.</p></div><button class="text-button" id="help-button">How it works <span aria-hidden="true">↗</span></button></div>
+      <div class="workspace">
+        <section class="input-column" aria-labelledby="source-heading">
+          <form id="explain-form">
+            <div class="section-heading"><span class="step-number">01</span><h2 id="source-heading">Start with your material</h2></div>
+            <div class="source-card"><div class="source-toolbar"><span class="source-label">PASTE YOUR TEXT OR CODE</span><button type="button" class="icon-button" id="clear-source" aria-label="Clear source text">×</button></div><label class="sr-only" for="source">Material to explain</label><textarea id="source" name="source" minlength="80" maxlength="20000" required spellcheck="false" placeholder="A tricky function. Your study notes. Instructions that don't quite make sense…"></textarea><div class="source-footer"><span>Text stays here until you generate</span><span id="char-count">0 / 20,000</span></div></div>
+            <fieldset class="audience-field"><legend>Make it relevant to</legend><div class="segmented"><label><input type="radio" name="audience" value="developer" checked><span>⌘ Developer</span></label><label><input type="radio" name="audience" value="student"><span>▧ Student</span></label><label><input type="radio" name="audience" value="everyday"><span>☀ Everyday</span></label></div></fieldset>
+            <div class="depth-row"><label for="depth">Level of detail</label><select id="depth"><option value="simple">Keep it simple</option><option value="balanced" selected>A little deeper</option><option value="deep">Give me the details</option></select></div>
+            <button class="primary-button generate-button" id="generate-button" type="submit"><span aria-hidden="true">✳</span><span id="generate-label">Explain this</span><span aria-hidden="true">→</span></button>
+            <button class="cancel-button" id="cancel-button" type="button" hidden>Cancel generation</button>
+            <p class="generation-note">Generated with your connected Ollama model.</p>
+            <div class="error-message" id="form-error" role="alert" hidden></div>
+          </form>
+          <div class="sample-section"><div class="sample-heading"><span>JUST EXPLORING?</span><span>No model needed</span></div><div id="example-list" class="example-list"></div></div>
+        </section>
+        <section class="result-column" aria-labelledby="result-heading">
+          <div class="section-heading result-section-heading"><span class="step-number">02</span><h2 id="result-heading">Find your aha moment</h2><span class="result-label" id="result-label">SAMPLE LESSON</span></div>
+          <div class="result-card" id="result-card"><div class="empty-state"><span class="empty-spark">✳</span><h3>A fresh perspective starts here.</h3><p>Choose a sample to explore, or connect your local AI and explain your own material.</p></div></div>
+          <div class="result-footnote"><span aria-hidden="true">◉</span><span>Follow the source. Click a passage reference to see where an idea comes from.</span></div>
+        </section>
+      </div>
+    </section>
+    <section id="library-view" hidden><div class="intro"><div><div class="eyebrow">A LITTLE KNOWLEDGE, KEPT CLOSE.</div><h1>Your <em>library.</em></h1><p>Lessons you saved in this browser. Export them to take them with you.</p></div></div><div id="library-list" class="library-grid"></div></section>
+    <footer class="main-footer"><span>Made for curious minds.</span><span>Code. Class notes. Everyday life. <span class="footer-spark">✳</span></span></footer>
+  </main>
+  <dialog id="settings-dialog" class="modal"><div class="modal-header"><div><span class="eyebrow">YOUR MODEL, YOUR MACHINE</span><h2>Connect local AI</h2></div><button class="icon-button" data-close="settings-dialog" aria-label="Close settings">×</button></div><p>ExplainLab uses Ollama to explain your material. Start Ollama and download a model, then refresh the connection.</p><div class="setup-steps"><div><b>1</b><span>Install <a href="https://ollama.com/download" target="_blank" rel="noreferrer">Ollama ↗</a> and start it.</span></div><div><b>2</b><span>Download a text model from the <a href="https://ollama.com/library" target="_blank" rel="noreferrer">model library ↗</a>.</span></div><div><b>3</b><span>Choose your installed model below.</span></div></div><label class="field-label" for="model-select">Installed model</label><select id="model-select"><option value="">No models found yet</option></select><p id="model-status" class="model-status" role="status">Checking connection…</p><button class="primary-button" id="refresh-models">Refresh connection <span aria-hidden="true">↻</span></button><p class="modal-note">Samples work without a model. Live generation sends your text to the Ollama endpoint configured on your server; the default is your own machine.</p></dialog>
+  <dialog id="help-dialog" class="modal"><div class="modal-header"><div><span class="eyebrow">FROM “WHAT?” TO “GOT IT.”</span><h2>A small lab for big ideas.</h2></div><button class="icon-button" data-close="help-dialog" aria-label="Close guide">×</button></div><div class="help-steps"><article><span>01</span><h3>Bring the source</h3><p>Paste code, notes, or instructions. Choose who the explanation is for and how much detail you want.</p></article><article><span>02</span><h3>Explore the connections</h3><p>Read the explanation, follow a concept map, and click source references to inspect the original passages.</p></article><article><span>03</span><h3>Make it stick</h3><p>Test yourself with a short quiz. Save a useful lesson in this browser or export it as Markdown or JSON.</p></article></div><div class="info-box">Sample lessons are written in advance. Your own material needs an Ollama model. Source references make an answer inspectable; they do not guarantee that the model's interpretation is correct.</div></dialog>
+  <dialog id="source-dialog" class="modal source-modal"><div class="modal-header"><div><span class="eyebrow">BACK TO THE ORIGINAL</span><h2>Source passage</h2></div><button class="icon-button" data-close="source-dialog" aria-label="Close source passage">×</button></div><div id="source-passages"></div></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

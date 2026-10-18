@@ -1,0 +1,14 @@
+{
+  "name": "explainlab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turn source text into an explorable lesson, concept map, and quiz using local AI.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,22 @@
+name: Bug report
+description: Something does not work as expected
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include the expected behavior and the steps to reproduce it.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, browser, Node version, and (if relevant) Ollama version and model name.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal example
+      description: Use a small original or public example. Remove private source text and secrets before posting.

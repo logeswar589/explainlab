@@ -1,0 +1,231 @@
+[
+  {
+    "id": "debounce",
+    "audience": "developer",
+    "title": "JavaScript debounce",
+    "description": "Understand the timer behind a search box that waits for you to stop typing.",
+    "source": "A trailing-edge debounce wraps a function so that it runs after calls have stopped for a chosen delay. Every new call restarts the wait. This is useful for a search field: the interface can update with each keystroke while an expensive search waits for a pause. Debouncing changes when work starts; it does not make the work itself faster.\n\nA small implementation is: function debounce(fn, delay) { let timer; return function (...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); }; } The timer variable belongs to one wrapper and survives between calls through a closure. Each call cancels that wrapper's pending timer, then schedules a replacement. The arrow callback keeps the receiver of the latest wrapper call, while args keeps that call's arguments. Create the wrapper once and reuse it; creating a new wrapper for every event creates separate timers.\n\nFor a search input, create a debounced search once, then pass the current text to it on every input event. Keep the visible input responsive. With a delay of 300 milliseconds and calls at 0, 100, and 250 milliseconds, the first two pending timers are cancelled. The last scheduled callback becomes eligible around 550 milliseconds and receives the last text. The event loop can make it run later.\n\nThis small implementation has no immediate first call, explicit cancel method, or maximum wait. A continuous stream of calls can postpone work indefinitely. A callback that already started is not stopped by clearTimeout; an earlier network request can still finish after a newer request. Request cancellation or a sequence check needs separate handling. Throttling is a different policy that limits how often work runs during ongoing activity.",
+    "lesson": {
+      "title": "Debounce: do the work after the pause",
+      "summary": "A trailing debounce keeps replacing one pending timer. When calls finally pause, it runs the function with the latest call's arguments and receiver. It can reduce repeated search requests, but it does not cancel work that has already started.",
+      "concepts": [
+        {
+          "id": "c1",
+          "title": "A quiet-period rule",
+          "explanation": "Each call starts the waiting period again. The expensive function runs only after a gap long enough for the timer to become eligible. The input can still update immediately.",
+          "analogy": "Imagine waiting until someone has stopped speaking before you answer. Every new word starts your pause timer again.",
+          "sourceIds": ["S1"]
+        },
+        {
+          "id": "c2",
+          "title": "One wrapper, one pending timer",
+          "explanation": "The closure holds the timer between calls. clearTimeout removes the previous pending callback, and setTimeout schedules its replacement. Reuse the same wrapper so those calls share the same timer.",
+          "analogy": "You keep rescheduling one calendar reminder instead of creating a separate reminder for every keystroke.",
+          "sourceIds": ["S2"]
+        },
+        {
+          "id": "c3",
+          "title": "The latest call wins",
+          "explanation": "The surviving callback uses the last call's arguments and receiver. With a 300 ms delay and calls at 0, 100, and 250 ms, it becomes eligible around 550 ms. A busy event loop may run it later.",
+          "analogy": "A draft order is updated while you are still choosing. When you stop making changes, the kitchen receives the final version.",
+          "sourceIds": ["S2", "S3"]
+        },
+        {
+          "id": "c4",
+          "title": "Pending is different from running",
+          "explanation": "Cancelling a timer does not cancel an already-started fetch. Continuous calls can also postpone this simple debounce forever because it has no maximum wait. Handle stale responses separately.",
+          "analogy": "Removing a delivery from tomorrow's schedule does not bring back a van that has already left.",
+          "sourceIds": ["S4"]
+        }
+      ],
+      "connections": [
+        {"from": "c1", "to": "c2", "label": "implemented with"},
+        {"from": "c2", "to": "c3", "label": "replaces earlier calls with"},
+        {"from": "c3", "to": "c4", "label": "does not stop earlier running work"}
+      ],
+      "steps": [
+        {"title": "Choose the work to delay", "detail": "Delay the expensive search, while letting the input show each keystroke immediately. Pick a pause duration appropriate for your interface.", "sourceIds": ["S1", "S3"]},
+        {"title": "Create the wrapper once", "detail": "Keep one debounced function for the event handler to reuse. That gives repeated calls a shared timer in the closure.", "sourceIds": ["S2"]},
+        {"title": "Replace the pending callback", "detail": "On each event, pass the newest text. Clear the old timer and schedule a new one. The last callback becomes eligible after the full delay from the last call.", "sourceIds": ["S2", "S3"]},
+        {"title": "Handle the remaining edge cases", "detail": "Decide whether you need cancellation or a maximum wait. For asynchronous searches, separately cancel obsolete requests or ignore stale responses.", "sourceIds": ["S4"]}
+      ],
+      "quiz": [
+        {
+          "question": "With a 300 ms delay and calls at 0, 100, and 250 ms, when does the last callback become eligible?",
+          "options": ["At 300 ms, measured from the first call", "Around 550 ms, measured from the last call", "At 250 ms, as soon as the last call arrives", "At 900 ms, after adding three delays"],
+          "answer": 1,
+          "explanation": "The last call replaces the pending timer at 250 ms. Add 300 ms to get about 550 ms. Eligibility is not a guarantee of exact execution time.",
+          "sourceIds": ["S3"]
+        },
+        {
+          "question": "Why should the event handler reuse the same debounced wrapper?",
+          "options": ["A new wrapper would automatically cancel every fetch", "JavaScript allows only one timer per page", "Reusing it makes the delay exactly accurate", "Its closure holds the shared timer that later calls replace"],
+          "answer": 3,
+          "explanation": "Each wrapper owns its own timer variable. New wrappers create separate timers, so they do not replace one another's pending work.",
+          "sourceIds": ["S2"]
+        },
+        {
+          "question": "What does this debounce do to an earlier network request that has already started?",
+          "options": ["Nothing; cancellation or stale-response handling is separate", "It aborts the request as soon as another key is pressed", "It guarantees responses arrive in the right order", "It turns the request into a throttled request"],
+          "answer": 0,
+          "explanation": "clearTimeout only affects a pending timer. It does not stop a callback or request that has already begun.",
+          "sourceIds": ["S4"]
+        }
+      ],
+      "caveat": "This is a curated teaching sample of a small trailing-edge debounce, not a full utility library. It omits leading calls, cancellation, maximum wait, and stale-request handling. Source links identify the passage behind a claim; they do not independently verify it."
+    }
+  },
+  {
+    "id": "photosynthesis",
+    "audience": "student",
+    "title": "How photosynthesis stores energy",
+    "description": "Connect sunlight, water, and carbon dioxide without losing track of where matter comes from.",
+    "source": "Photosynthesis lets plants use light energy to build energy-rich organic molecules from carbon dioxide and water. The carbon in those molecules comes from carbon dioxide, not from sunlight. Light supplies energy. In plants, photosynthesis happens in chloroplasts, which contain the light-absorbing pigment chlorophyll. Oxygen is released during the process.\n\nThe light-dependent reactions take place at the thylakoid membranes inside chloroplasts. Chlorophyll and other pigments absorb light. Water is split, supplying electrons and releasing oxygen. These reactions produce ATP and NADPH, molecules that carry usable energy and reducing power to the next stage. The oxygen released by photosynthesis comes from water.\n\nThe Calvin cycle takes place in the stroma, the fluid around the thylakoids. It uses carbon dioxide together with ATP and NADPH to build a small carbon-containing sugar called G3P. Plants can use G3P to make sugars and other organic molecules. The cycle also regenerates the carbon-dioxide acceptor needed to keep going. It does not directly capture light, but it depends on products of the light-dependent reactions; calling it a dark reaction does not mean it only happens at night.\n\nThe rate of photosynthesis depends on conditions, including light, carbon dioxide availability, and temperature. More light does not always increase the rate: another requirement can become limiting, and excessive light can cause damage. Plants also perform cellular respiration, using energy-rich molecules to make ATP for cellular work. Respiration can occur during the day and at night; it does not wait for photosynthesis to stop.",
+    "lesson": {
+      "title": "From sunlight to stored chemical energy",
+      "summary": "Photosynthesis links two stages. Light-dependent reactions use light and water to provide ATP and NADPH, releasing oxygen. The Calvin cycle uses those products to incorporate carbon dioxide into G3P, which can become sugars and other plant materials.",
+      "concepts": [
+        {
+          "id": "c1",
+          "title": "Energy and matter have different sources",
+          "explanation": "Sunlight supplies energy, while carbon dioxide supplies the carbon used to build organic molecules. Chloroplasts contain chlorophyll that helps absorb light. Sunlight is not the material that becomes a plant's carbon.",
+          "analogy": "A workshop needs both electricity and building materials. Electricity runs the tools; it does not become the wooden table.",
+          "sourceIds": ["S1"]
+        },
+        {
+          "id": "c2",
+          "title": "Light reactions prepare the carriers",
+          "explanation": "At thylakoid membranes, absorbed light drives reactions that produce ATP and NADPH. Splitting water supplies electrons and releases oxygen. This stage provides what the Calvin cycle needs.",
+          "analogy": "One part of a workshop charges portable power packs and prepares supplies for the next workbench. The power-pack comparison is only an analogy for ATP and NADPH.",
+          "sourceIds": ["S2"]
+        },
+        {
+          "id": "c3",
+          "title": "The Calvin cycle builds carbon molecules",
+          "explanation": "In the stroma, the Calvin cycle uses carbon dioxide, ATP, and NADPH to make G3P. G3P can be used to build sugars and other materials. The cycle relies on the light reactions even though it does not directly absorb light.",
+          "analogy": "A second workbench uses the delivered power and raw materials to assemble useful parts, while resetting its equipment for the next round.",
+          "sourceIds": ["S3"]
+        },
+        {
+          "id": "c4",
+          "title": "The whole plant has limits and other energy needs",
+          "explanation": "Light, carbon dioxide, and temperature affect the rate, so extra light is not always helpful. Plants also respire in daylight and darkness to make ATP for cellular work.",
+          "analogy": "Adding more power cannot speed up a workshop that has run out of materials. The workshop also has ongoing jobs that use what it produces.",
+          "sourceIds": ["S4"]
+        }
+      ],
+      "connections": [
+        {"from": "c1", "to": "c2", "label": "light energy powers"},
+        {"from": "c2", "to": "c3", "label": "supplies ATP and NADPH"},
+        {"from": "c1", "to": "c3", "label": "carbon dioxide supplies carbon to"},
+        {"from": "c4", "to": "c2", "label": "conditions limit the overall process"}
+      ],
+      "steps": [
+        {"title": "Track the inputs separately", "detail": "Identify light as the energy source and carbon dioxide as the carbon source. Locate the process in the plant's chloroplasts.", "sourceIds": ["S1"]},
+        {"title": "Follow the light-dependent reactions", "detail": "At the thylakoid membranes, light absorption supports production of ATP and NADPH. Water is split and oxygen is released.", "sourceIds": ["S2"]},
+        {"title": "Follow carbon into G3P", "detail": "In the stroma, the Calvin cycle uses carbon dioxide and the products of the light reactions to build G3P, while regenerating the acceptor needed for another cycle.", "sourceIds": ["S3"]},
+        {"title": "Check the whole-plant context", "detail": "Look for a limiting condition before predicting a faster rate. Remember that respiration continues during both day and night.", "sourceIds": ["S4"]}
+      ],
+      "quiz": [
+        {
+          "question": "Where does the carbon in the organic molecules made by photosynthesis come from?",
+          "options": ["Sunlight", "Oxygen gas", "Carbon dioxide", "The energy stored in ATP"],
+          "answer": 2,
+          "explanation": "Carbon dioxide supplies the carbon. Light provides energy, which plays a different role from the source of matter.",
+          "sourceIds": ["S1", "S3"]
+        },
+        {
+          "question": "Which statement correctly links the two stages?",
+          "options": ["The Calvin cycle supplies sunlight to the thylakoids", "The light reactions provide ATP and NADPH for the Calvin cycle", "The Calvin cycle can only happen at night", "The light reactions turn sunlight directly into carbon"],
+          "answer": 1,
+          "explanation": "The light reactions make ATP and NADPH, which the Calvin cycle uses. Not capturing light directly does not make the Calvin cycle a night-only process.",
+          "sourceIds": ["S2", "S3"]
+        },
+        {
+          "question": "Why might adding more light fail to increase photosynthesis?",
+          "options": ["Plants cannot respire in the light", "Light is never needed after a plant sprouts", "Carbon dioxide always increases automatically with light", "Another condition may be limiting, and excessive light can damage the plant"],
+          "answer": 3,
+          "explanation": "The rate depends on several conditions. More of one input does not overcome every other limit, and excessive light can be harmful.",
+          "sourceIds": ["S4"]
+        }
+      ],
+      "caveat": "This curated overview leaves out detailed chemistry, quantities, and differences among plant pathways. Its analogies simplify molecular processes. Source links trace statements to this short passage; they are not independent scientific verification."
+    }
+  },
+  {
+    "id": "camera",
+    "audience": "everyday",
+    "title": "A camera quick-start, made clear",
+    "description": "Turn an original fictional camera guide into a simple first-photo checklist.",
+    "source": "This is a fictional quick-start guide for the PocketFrame M1 camera, created for an educational demo. With the power off, insert the charged battery and a compatible memory card in the direction marked inside their compartments. Close both covers. Do not force a battery or card that does not slide into place. These instructions describe this imaginary camera only.\n\nPress the power button, then set the mode dial to the green AUTO symbol. In this mode, the camera chooses the exposure settings for a basic photo. Frame the subject on the rear screen and keep fingers away from the lens. Hold the camera steadily with both hands.\n\nPress the shutter button halfway and wait for the focus rectangle to turn green. Then press the shutter fully to take the photo. The memory-card access light blinks while the image is being saved. Wait until that light stops blinking before switching off the camera, opening the card cover, or removing the card.\n\nPress the playback button to review saved photos and use the left and right buttons to move between them. To delete the displayed photo, press the trash button and confirm Delete. This camera has no undo for deletion. Back up photos you want to keep before deleting them or formatting the card. Formatting removes all photos on the card, while deleting the displayed photo removes just that selected photo.",
+    "lesson": {
+      "title": "Your first photo in four clear steps",
+      "summary": "For this fictional camera: prepare the battery and card with power off, select AUTO, half-press to focus and fully press to shoot, then review your photo. Let the saving light finish before handling the card, and treat deletion as permanent.",
+      "concepts": [
+        {
+          "id": "c1",
+          "title": "Prepare before powering on",
+          "explanation": "Insert the charged battery and compatible card with the camera off. Follow the compartment markings, close the covers, and never force a part into place.",
+          "analogy": "Set up your ingredients and tools before switching on a kitchen appliance.",
+          "sourceIds": ["S1"]
+        },
+        {
+          "id": "c2",
+          "title": "AUTO handles exposure",
+          "explanation": "The green AUTO mode chooses basic exposure settings. Your part is to frame the subject, hold the camera steadily, and keep the lens clear.",
+          "analogy": "AUTO is a helper that adjusts the controls while you choose what the picture should show.",
+          "sourceIds": ["S2"]
+        },
+        {
+          "id": "c3",
+          "title": "Focus, shoot, then let it save",
+          "explanation": "A half-press starts focusing; a green rectangle means you can fully press to take the photo. A blinking access light means saving is still in progress, so wait before switching off or handling the card.",
+          "analogy": "Taking the photo is like clicking Save on a document: give the save operation time to finish before disconnecting the storage.",
+          "sourceIds": ["S3"]
+        },
+        {
+          "id": "c4",
+          "title": "Review before deleting",
+          "explanation": "Playback lets you inspect saved photos. Delete removes the displayed photo after confirmation; formatting removes all photos on the card. This fictional camera has no deletion undo, so back up keepers first.",
+          "analogy": "Deleting one photo is like removing one page; formatting is like emptying the whole notebook.",
+          "sourceIds": ["S4"]
+        }
+      ],
+      "connections": [
+        {"from": "c1", "to": "c2", "label": "prepares the camera for"},
+        {"from": "c2", "to": "c3", "label": "sets up a basic shot before"},
+        {"from": "c3", "to": "c4", "label": "saves a photo for"}
+      ],
+      "steps": [
+        {"title": "Prepare the camera", "detail": "With power off, fit the charged battery and compatible card according to their markings. Close the covers. Stop if either part needs to be forced.", "sourceIds": ["S1"]},
+        {"title": "Select AUTO and compose", "detail": "Turn the camera on and select the green AUTO symbol. Frame your subject on the rear screen, keep the lens clear, and hold the camera with both hands.", "sourceIds": ["S2"]},
+        {"title": "Focus, take the photo, and wait", "detail": "Half-press until the focus rectangle is green, then fully press. Wait for the memory-card access light to stop blinking before powering off or opening the card cover.", "sourceIds": ["S3"]},
+        {"title": "Review and protect your keepers", "detail": "Use playback and the arrow buttons to browse. Back up photos you want to keep. Check the displayed photo carefully before confirming Delete, and remember that formatting clears all photos.", "sourceIds": ["S4"]}
+      ],
+      "quiz": [
+        {
+          "question": "What should you do when the memory-card access light is blinking?",
+          "options": ["Remove the card to see the new photo", "Switch the camera off immediately", "Open the card cover to help it cool", "Wait for the light to stop before powering off or handling the card"],
+          "answer": 3,
+          "explanation": "The blinking light indicates that the camera is still saving the image. The guide says to let that operation finish first.",
+          "sourceIds": ["S3"]
+        },
+        {
+          "question": "What is the shutter-button sequence in this guide?",
+          "options": ["Half-press, wait for the green focus rectangle, then fully press", "Fully press, then turn the mode dial to AUTO", "Half-press, remove the card, then fully press", "Press playback, then hold the trash button"],
+          "answer": 0,
+          "explanation": "The half-press is for focusing. Once the rectangle turns green, the full press takes the photo.",
+          "sourceIds": ["S3"]
+        },
+        {
+          "question": "How does formatting differ from deleting the displayed photo?",
+          "options": ["Formatting only changes how the screen looks", "Formatting restores photos that were deleted", "Formatting removes all photos on the card; Delete removes the selected photo", "They both remove only the most recent photo"],
+          "answer": 2,
+          "explanation": "The guide distinguishes deleting one selected photo from formatting the whole card. Back up photos you want to keep before either action.",
+          "sourceIds": ["S4"]
+        }
+      ],
+      "caveat": "PocketFrame M1 is fictional. Do not use these controls or procedures as instructions for a real camera; consult its own manual. Source links provide traceability to the demo passage, not independent verification."
+    }
+  }
+]
